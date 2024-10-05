@@ -1,0 +1,11 @@
+html, body {
+    background-color: #ecf0f5;
+}
+
+.custom-table {
+    width: 40%;
+}
+
+td {
+    font-weight: 500;
+}
