@@ -1,1 +1,1 @@
-a:5:{s:7:"Orderus";a:1:{s:6:"health";i:33;}s:6:"Minyak";a:1:{s:6:"health";i:-16;}s:8:"attacker";s:6:"Minyak";s:11:"countFights";i:5;s:8:"gameOver";b:1;}
+a:5:{s:7:"Orderus";a:1:{s:6:"health";i:92;}s:6:"Minyak";a:1:{s:6:"health";i:83;}s:8:"attacker";s:6:"Minyak";s:11:"countFights";i:0;s:8:"gameOver";b:0;}
