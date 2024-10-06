@@ -9,7 +9,7 @@ class DefenderOrderus extends ResultFightStats
     public function __construct(
         private int $strength, 
         private int $defence, 
-        private int $initialHealth,
+        private int|float $initialHealth,
         private int|float|null $health = null,
         private int|float|null $damage = null
     ) {

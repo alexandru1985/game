@@ -3,7 +3,6 @@
 namespace App\Tests\Classes;
 
 use App\Classes\FightAction;
-
 use PHPUnit\Framework\TestCase;
 
 class FightActionTest extends TestCase

@@ -1,0 +1,17 @@
+services:
+    nginx:
+      build: ./nginx
+      container_name: game-nginx
+      ports:
+        - 80:80
+      volumes:
+        - ./../:/var/www/html
+      links:
+        - php-fpm
+    php-fpm:
+      build: ./php-fpm
+      container_name: game-php-fpm
+      expose:
+        - 9000
+      volumes:
+        - ./../:/var/www/html
