@@ -6,7 +6,7 @@ use App\Warriors\Orderus;
 use App\Warriors\Minyak;
 use App\Stats\OrderusStatsBuilder;
 use App\Stats\MinyakStatsBuilder;
-use App\Classes\Attacker;
+use App\Classes\FightAction;
 use App\Classes\DefenderFactory;
 use App\Classes\Labels;
 
@@ -31,7 +31,7 @@ $Minyak = $MinyakStatsBuilder
     ->build();
 
 $label = new Labels();
-$attacker = new Attacker();
+$fightAction = new FightAction();
 
 if (!isset($_POST['playGame'])) {
 
@@ -47,8 +47,8 @@ if (!isset($_POST['playGame'])) {
     $MinyakSpeed = $Minyak->getSpeed();
     $MinyakLuck = $Minyak->getLuck();
 
-    $attacker->setAttacker($OrderusSpeed, $OrderusLuck, $MinyakSpeed, $MinyakLuck);
-    $OrderusAction = $attacker->getOrderusAction();
+    $fightAction->setAction($OrderusSpeed, $OrderusLuck, $MinyakSpeed, $MinyakLuck);
+    $OrderusAction = $fightAction->getOrderusAction();
     
     // Set first attacker
 

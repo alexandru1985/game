@@ -2,12 +2,12 @@
 
 namespace App\Classes;
 
-class Attacker
+class FightAction
 {
     public string $Orderus;
     public string $Minyak;
 
-    public function setAttacker(
+    public function setAction(
         int $OrderusSpeed, 
         int $OrderusLuck, 
         int $MinyakSpeed, 
