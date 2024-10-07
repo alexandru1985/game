@@ -11,7 +11,7 @@ class WarriorNotFound extends Exception
         try {
             throw new Exception("Warrior not found.");
         } catch (Exception $e) {
-            die($e->getMessage());
+            print($e->getMessage());
         }
     }   
 }
