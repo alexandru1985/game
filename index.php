@@ -9,8 +9,8 @@ use App\Stats\MinyakStatsBuilder;
 use App\Classes\FightAction;
 use App\Classes\DefenderFactory;
 use App\Classes\Labels;
-
-$destination = 'data/savedData.txt';
+use App\Classes\Fight;
+use App\Classes\Data;
 
 $OrderusStatsBuilder = new OrderusStatsBuilder();
 $Orderus = $OrderusStatsBuilder
@@ -30,45 +30,31 @@ $Minyak = $MinyakStatsBuilder
     ->setLuck()
     ->build();
 
+$data = new Data();
 $label = new Labels();
-$fightAction = new FightAction();
+$fight = new Fight($Orderus, $Minyak, $label);
+
+// Set stats before first attack
 
 if (!isset($_POST['playGame'])) {
 
-    // Get and save initial health for warriors
-
-    $label->data['Orderus']['health'] = $Orderus->getHealth();
-    $label->data['Minyak']['health'] = $Minyak->getHealth();
-
-    // Get warriors params to determine first attack
-
-    $OrderusSpeed = $Orderus->getSpeed();
-    $OrderusLuck = $Orderus->getLuck();
-    $MinyakSpeed = $Minyak->getSpeed();
-    $MinyakLuck = $Minyak->getLuck();
-
-    $fightAction->setAction($OrderusSpeed, $OrderusLuck, $MinyakSpeed, $MinyakLuck);
-    $OrderusAction = $fightAction->getOrderusAction();
+    $fight->initializeWarriorsHealth();
+    $fight->setFirstAttacker();
+    $label->setLabels(
+        $fight->getFirstAttacker(),
+        $label->data['Orderus']['health'],
+        $label->data['Minyak']['health']
+    );
     
-    // Set first attacker
-
-    $attacker = $OrderusAction == 'attack' ? 'Orderus' : 'Minyak';
-    $label->data['attacker'] = $attacker;
-
-    // Set labels before first attack
-    
-    $label->setLabels($attacker, $label->data['Orderus']['health'], $label->data['Minyak']['health']);
-  
-    // Save initial data
-
-    $saveData = file_put_contents($destination, serialize($label->data));
+    $data->save($label->data);
 }
 
+// Set stats after fight is started
 
 if (isset($_POST['playGame'])) {
     
-    $data = file_get_contents($destination);
-    $label->data = unserialize($data);
+    $dataFight = $data->getData();
+    $label->data = $dataFight;
 
     // Get next attacker
 
@@ -79,58 +65,39 @@ if (isset($_POST['playGame'])) {
     $OrderusHealth = $label->data['Orderus']['health'];
     $MinyakHealth = $label->data['Minyak']['health'];
 
-    // Set params to calculate damage for last attack
+    // Get defender of fight
 
-    $OrderusStrength = $Orderus->getStrength();
-    $OrderusDefence = $Orderus->getDefence();
+    $defender = $fight->getDefender($OrderusHealth, $MinyakHealth, $attacker);
 
-    $MinyakStrength = $Minyak->getStrength();
-    $MinyakDefence = $Minyak->getDefence();
+    // Set damage of defender
 
-    // Set warrior which is in defend
-
-    $defender = match ($attacker) {
-        'Orderus' => DefenderFactory::createDefender(
-            $attacker,
-            $OrderusStrength,
-            $MinyakDefence,
-            $MinyakHealth
-        ),
-        'Minyak' => DefenderFactory::createDefender(
-            $attacker,
-            $MinyakStrength,
-            $OrderusDefence,
-            $OrderusHealth
-        )
-    };
+    $defender->setDamage();
 
     // There are 20% chances to reduce Minyak damage with a half
 
-    $divideDamage = 1;
-    $magicShield = $Orderus->magicShield();
+    $magicShield = $fight->magicShield($attacker);
 
-    if ($magicShield == true && $attacker == 'Minyak') {
-        $label->magicShield = "<span style='color:red;'>Yes</span>";
-        $divideDamage = 2;
-    } 
+    if ($magicShield) {
+        $defender->applyDividedDamage();
+        $label->setLabels(magicShield: $magicShield);
+    }
 
-    $damage = $defender->getDamage($divideDamage);
+    // Set health for defender 
+
+    $defender->setHealth();
+
+    // Get health and damage for defender
+
     $healthAfterDamage = $defender->getHealth();
+    $damage = $defender->getDamage();
 
-    // Set labels after Last attack
+    // Set labels after last attack
     
     $label->setLabels($attacker, $OrderusHealth, $MinyakHealth, $healthAfterDamage, $damage);
-
-    // Get winner of fight
-    
-    $label->getWinner();
     
     // Switch attacks between Orderus and Minyak after last attack
 
-    $attacker = match ($label->data['attacker']) {
-        'Orderus' => 'Minyak',
-        'Minyak' => 'Orderus',
-    };
+    $attacker = $fight->switchAttacker($attacker);
 
     // Set attacker for next attack
 
@@ -138,22 +105,25 @@ if (isset($_POST['playGame'])) {
 
     // There are 10% chances as Orderus makes an attack again
 
-    $rapidStrike = $Orderus->rapidStrike();
+    $rapidStrike = $fight->rapidStrike($attacker);
 
-    if ($rapidStrike == true && $attacker == 'Minyak') {
+    if ($rapidStrike) {
         $attacker = 'Orderus';
         $label->data['attacker'] = $attacker;
-        $label->actionOrderus = 'Attack';
-        $label->actionMinyak = 'Defend';
-        $label->rapidStrike = "<span style='color:red;'>Yes</span>";
+        $label->setLabels(rapidStrike: $rapidStrike);
     }
     
-    $label->data['countFights'] += 1;
-    $label->fights = $label->data['countFights'];
+    // Set count fights
+
+    $label->countFights();
     
+    // Get winner of fight
+
+    $label->getWinner();
+
     // Save data after last attack 
-    
-    $saveData = file_put_contents($destination, serialize($label->data));
+
+    $data->save($label->data);
 }
 ?>
 <!DOCTYPE html>

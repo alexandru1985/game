@@ -8,17 +8,18 @@ use PHPUnit\Framework\TestCase;
 class DefenderOrderusTest extends TestCase
 {
     private $defenderOrderus;
-    private $damage;
 
     protected function setUp(): void 
     {
         $this->defenderOrderus = new DefenderOrderus(70, 50, 90, 80);
-        $this->damage = $this->defenderOrderus->getDamage(2);
+        $this->defenderOrderus->setDamage();
+        $this->defenderOrderus->applyDividedDamage();
+        $this->defenderOrderus->setHealth();
     }
 
     public function testDamageIsCorrectDividedToHalf()
     {
-        $this->assertEquals(10, $this->damage);
+        $this->assertEquals(10, $this->defenderOrderus->getDamage());
     }
 
     public function testHealthIsCorrectSubtracted()

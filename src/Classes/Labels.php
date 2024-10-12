@@ -30,71 +30,92 @@ class Labels extends Data
     ];
 
     public function setLabels(
-        string $attacker,
-        int|float $OrderusHealth,  
-        int|float $MinyakHealth, 
+        ?string $attacker = null,
+        int|float|null $OrderusHealth = null,  
+        int|float|null $MinyakHealth = null, 
         int|float|null $healthAfterDamage = null, 
-        int|float|null $damage = null
+        int|float|null $damage = null,
+        bool $magicShield = false,
+        bool $rapidStrike = false
     ): void {
 
-        // Set initial health before first attack
+        if ($magicShield == false && $rapidStrike == false) {
 
-        $this->OrderusHealth = $OrderusHealth;
-        $this->MinyakHealth = $MinyakHealth;
+            // Set initial health before first attack
 
-        switch ($attacker) {
-            case 'Orderus':
-                $this->actionOrderus = $this->actions['attack']['Orderus'];
-                $this->actionMinyak = $this->actions['defend']['Minyak'];
-                $this->OrderusHealth = $OrderusHealth;
-                
-                // Change default labels after first attack
+            $this->OrderusHealth = $OrderusHealth;
+            $this->MinyakHealth = $MinyakHealth;
 
-                if ($damage != null) {
-                    $this->actionOrderus = $this->actions['defend']['Orderus'];
-                    $this->actionMinyak = $this->actions['attack']['Minyak'];
-                    $this->lastAttackOrderus = "Attack";
-                    $this->lastAttackMinyak = "Defend";
-                    $this->damageOrderus = $damage;
-
-
-                    if ($healthAfterDamage > 0) {
-                        $this->MinyakHealth = $healthAfterDamage;
-                    } else {
-                        $this->MinyakHealth = "<span style='color:red;'>" . $healthAfterDamage . "</span>";
-                    }
-
-                    // Save subtracted health on data array
-
-                    $this->data['Minyak']['health'] = $healthAfterDamage;
-                }
-                break;
-            case 'Minyak':   
-                $this->actionOrderus = $this->actions['defend']['Orderus'];
-                $this->actionMinyak = $this->actions['attack']['Minyak'];
-                $this->MinyakHealth = $MinyakHealth;
-                
-                // Change default labels after first attack
-
-                if ($damage != null) {
+            switch ($attacker) {
+                case 'Orderus':
                     $this->actionOrderus = $this->actions['attack']['Orderus'];
                     $this->actionMinyak = $this->actions['defend']['Minyak'];
-                    $this->lastAttackOrderus = 'Defend';
-                    $this->lastAttackMinyak = 'Attack';
-                    $this->damageMinyak = $damage;
+                    $this->OrderusHealth = $OrderusHealth;
+                    
+                    // Change default labels after first attack
 
-                    if ($healthAfterDamage > 0) {
-                        $this->OrderusHealth = $healthAfterDamage;
-                    } else {
-                        $this->OrderusHealth = "<span style='color:red;'>" . $healthAfterDamage . "</span>";
+                    if ($damage > 0) {
+                        $this->actionOrderus = $this->actions['defend']['Orderus'];
+                        $this->actionMinyak = $this->actions['attack']['Minyak'];
+                        $this->lastAttackOrderus = "Attack";
+                        $this->lastAttackMinyak = "Defend";
+                        $this->damageOrderus = $damage;
+
+
+                        if ($healthAfterDamage > 0) {
+                            $this->MinyakHealth = $healthAfterDamage;
+                        } else {
+                            $this->MinyakHealth = "<span style='color:red;'>" . $healthAfterDamage . "</span>";
+                        }
+
+                        // Save subtracted health on data array
+
+                        $this->data['Minyak']['health'] = $healthAfterDamage;
                     }
+                    break;
+                case 'Minyak':   
+                    $this->actionOrderus = $this->actions['defend']['Orderus'];
+                    $this->actionMinyak = $this->actions['attack']['Minyak'];
+                    $this->MinyakHealth = $MinyakHealth;
+                    
+                    // Change default labels after first attack
 
-                    // Save subtracted health on data array
+                    if ($damage > 0) {
+                        $this->actionOrderus = $this->actions['attack']['Orderus'];
+                        $this->actionMinyak = $this->actions['defend']['Minyak'];
+                        $this->lastAttackOrderus = 'Defend';
+                        $this->lastAttackMinyak = 'Attack';
+                        $this->damageMinyak = $damage;
 
-                    $this->data['Orderus']['health'] = $healthAfterDamage;
-                }
-                break;
+                        if ($healthAfterDamage > 0) {
+                            $this->OrderusHealth = $healthAfterDamage;
+                        } else {
+                            $this->OrderusHealth = "<span style='color:red;'>" . $healthAfterDamage . "</span>";
+                        }
+
+                        // Save subtracted health on data array
+
+                        $this->data['Orderus']['health'] = $healthAfterDamage;
+                    }
+                    break;
+            }
+        } 
+          
+        if ($magicShield == true) {
+            $this->magicShield = "<span style='color:red;'>Yes</span>";
         }
+
+        if ($rapidStrike == true) {
+            $this->actionOrderus = 'Attack';
+            $this->actionMinyak = 'Defend';
+            $this->rapidStrike = "<span style='color:red;'>Yes</span>";
+        }
+    }
+
+    public function countFights():void
+    {
+        $this->data['countFights'] += 1;
+        $this->fights = $this->data['countFights'];
     }
 
     public function getWinner(): void 

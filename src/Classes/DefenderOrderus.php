@@ -15,13 +15,28 @@ class DefenderOrderus extends ResultFightStats
     ) {
     }
     
-    public function getDamage(int $divideDamage): int|float
+    public function setDamage(): void
     {
-        return $this->damage = ($this->strength - $this->defence) / $divideDamage;
+        $this->damage = $this->strength - $this->defence;
+    }
+
+    public function getDamage(): int|float
+    {
+        return $this->damage;
+    }
+
+    public function setHealth(): void 
+    {
+        $this->health = $this->initialHealth - $this->damage;
     }
 
     public function getHealth(): int|float 
     {
-        return $this->health = $this->initialHealth - $this->damage;
+        return $this->health;
+    }
+
+    public function applyDividedDamage(): void 
+    {
+        $this->damage = $this->getDamage() / 2;
     }
 }

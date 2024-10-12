@@ -8,17 +8,17 @@ use PHPUnit\Framework\TestCase;
 class DefenderMinyakTest extends TestCase
 {
     private $defenderMinyak;
-    private $damage;
 
     protected function setUp(): void 
     {
         $this->defenderMinyak = new DefenderMinyak(60, 40, 80, 70);
-        $this->damage = $this->defenderMinyak->getDamage(1);
+        $this->defenderMinyak->setDamage();
+        $this->defenderMinyak->setHealth();
     }
 
     public function testDamageIsNotDividedToHalf()
     {
-        $this->assertEquals(20, $this->damage);
+        $this->assertEquals(20, $this->defenderMinyak->getDamage());
     }
 
     public function testHealthIsCorrectSubtracted()
