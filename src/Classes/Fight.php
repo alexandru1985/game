@@ -7,13 +7,14 @@ use App\Warriors\Minyak;
 use App\Classes\DefenderMinyak;
 use App\Classes\DefenderOrderus;
 use App\Classes\Labels;
+use App\Classes\Data;
 
 class Fight
 {
     public function __construct(
         private Orderus $Orderus,
         private Minyak $Minyak,
-        private ?Labels $label = null,
+        private Data $data,
         private ?string $OrderusAction = null,
         private ?string $MinyakAction = null,
         private ?string $firstAttacker = null
@@ -22,10 +23,10 @@ class Fight
 
     public function initializeWarriorsHealth(): array
     {
-        $this->label->data['Orderus']['health'] = $this->Orderus->getHealth();
-        $this->label->data['Minyak']['health'] = $this->Minyak->getHealth();
+        $this->data->dataFight['Orderus']['health'] = $this->Orderus->getHealth();
+        $this->data->dataFight['Minyak']['health'] = $this->Minyak->getHealth();
 
-        return $this->label->data;
+        return $this->data->dataFight;
     }
 
     public function setFirstAttacker(): void
@@ -43,7 +44,7 @@ class Fight
         // Set first attacker
 
         $this->firstAttacker = $OrderusAction == 'attack' ? 'Orderus' : 'Minyak';
-        $this->label->data['attacker'] = $this->firstAttacker;
+        $this->data->dataFight['attacker'] = $this->firstAttacker;
     }
 
     public function setFightAction(

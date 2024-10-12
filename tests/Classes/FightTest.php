@@ -8,13 +8,13 @@ use App\Stats\OrderusStatsBuilder;
 use App\Stats\MinyakStatsBuilder;
 use App\Classes\DefenderMinyak;
 use App\Classes\DefenderOrderus;
-use App\Classes\Labels;
+use App\Classes\Data;
 
 class FightTest extends TestCase
 {
     private $Orderus;
     private $Minyak;
-    private $label;
+    private $data;
     private $fight;
 
     protected function setUp(): void 
@@ -37,8 +37,8 @@ class FightTest extends TestCase
             ->setLuck()
             ->build();
 
-        $this->label = new Labels();
-        $this->fight = new Fight($this->Orderus, $this->Minyak, $this->label);
+        $this->data = new Data();
+        $this->fight = new Fight($this->Orderus, $this->Minyak, $this->data);
     }
 
     public function testInitializeWarriorsHealth()

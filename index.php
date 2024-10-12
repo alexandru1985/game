@@ -6,7 +6,6 @@ use App\Warriors\Orderus;
 use App\Warriors\Minyak;
 use App\Stats\OrderusStatsBuilder;
 use App\Stats\MinyakStatsBuilder;
-use App\Classes\FightAction;
 use App\Classes\DefenderFactory;
 use App\Classes\Labels;
 use App\Classes\Fight;
@@ -31,8 +30,8 @@ $Minyak = $MinyakStatsBuilder
     ->build();
 
 $data = new Data();
-$label = new Labels();
-$fight = new Fight($Orderus, $Minyak, $label);
+$label = new Labels($data);
+$fight = new Fight($Orderus, $Minyak, $data);
 
 // Set stats before first attack
 
@@ -42,11 +41,11 @@ if (!isset($_POST['playGame'])) {
     $fight->setFirstAttacker();
     $label->setLabels(
         $fight->getFirstAttacker(),
-        $label->data['Orderus']['health'],
-        $label->data['Minyak']['health']
+        $data->dataFight['Orderus']['health'],
+        $data->dataFight['Minyak']['health']
     );
     
-    $data->save($label->data);
+    $data->save($data->dataFight);
 }
 
 // Set stats after fight is started
@@ -54,16 +53,16 @@ if (!isset($_POST['playGame'])) {
 if (isset($_POST['playGame'])) {
     
     $dataFight = $data->getData();
-    $label->data = $dataFight;
+    $data->dataFight = $dataFight;
 
     // Get next attacker
 
-    $attacker = $label->data['attacker'];
+    $attacker = $data->dataFight['attacker'];
 
     // Keep initial health of warriors 
 
-    $OrderusHealth = $label->data['Orderus']['health'];
-    $MinyakHealth = $label->data['Minyak']['health'];
+    $OrderusHealth = $data->dataFight['Orderus']['health'];
+    $MinyakHealth = $data->dataFight['Minyak']['health'];
 
     // Get defender of fight
 
@@ -94,14 +93,14 @@ if (isset($_POST['playGame'])) {
     // Set labels after last attack
     
     $label->setLabels($attacker, $OrderusHealth, $MinyakHealth, $healthAfterDamage, $damage);
-    
+
     // Switch attacks between Orderus and Minyak after last attack
 
     $attacker = $fight->switchAttacker($attacker);
 
     // Set attacker for next attack
 
-    $label->data['attacker'] = $attacker;
+    $data->dataFight['attacker'] = $attacker;
 
     // There are 10% chances as Orderus makes an attack again
 
@@ -109,7 +108,7 @@ if (isset($_POST['playGame'])) {
 
     if ($rapidStrike) {
         $attacker = 'Orderus';
-        $label->data['attacker'] = $attacker;
+        $data->dataFight['attacker'] = $attacker;
         $label->setLabels(rapidStrike: $rapidStrike);
     }
     
@@ -123,7 +122,7 @@ if (isset($_POST['playGame'])) {
 
     // Save data after last attack 
 
-    $data->save($label->data);
+    $data->save($data->dataFight);
 }
 ?>
 <!DOCTYPE html>
@@ -181,7 +180,7 @@ if (isset($_POST['playGame'])) {
                         <td></td>
                     </tr>
                     <caption>           
-                    <?php if ($label->data['gameOver'] == false) { ?>
+                    <?php if ($data->dataFight['gameOver'] == false) { ?>
                             <form action="index.php" method="post">
                                 <input type="hidden" name="playGame" value="1">
                                 <input type="submit" class="btn btn-primary" value="Play">

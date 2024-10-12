@@ -4,30 +4,34 @@ namespace App\Classes;
 
 use App\Classes\Data;
 
-class Labels extends Data 
+class Labels 
 {
-    public string $actionOrderus = 'Attack';
-    public string $actionMinyak = 'Defend';
-    public string $lastAttackOrderus = 'No';
-    public string $lastAttackMinyak = 'No';
-    public int|float $damageOrderus = 0;
-    public int|float $damageMinyak = 0;
-    public string $OrderusHealth;
-    public string $MinyakHealth;
-    public string $rapidStrike = 'No';
-    public string $magicShield = 'No';
-    public int $fights = 0;
-    public string $winner;
-    public array $actions = [
-        'attack' => [
-            'Orderus' => 'Attack',
-            'Minyak' => 'Attack'
-        ],
-        'defend' => [
-            'Orderus' => 'Defend',
-            'Minyak' => 'Defend' 
+    public function __construct(
+        private Data $data,
+        public string $actionOrderus = 'Attack',
+        public string $actionMinyak = 'Defend',
+        public string $lastAttackOrderus = 'No',
+        public string $lastAttackMinyak = 'No',
+        public int|float $damageOrderus = 0,
+        public int|float $damageMinyak = 0,
+        public ?string $OrderusHealth = null,
+        public ?string $MinyakHealth = null,
+        public string $rapidStrike = 'No',
+        public string $magicShield = 'No',
+        public int $fights = 0,
+        public ?string $winner = null,
+        public array $actions = [
+            'attack' => [
+                'Orderus' => 'Attack',
+                'Minyak' => 'Attack'
+            ],
+            'defend' => [
+                'Orderus' => 'Defend',
+                'Minyak' => 'Defend' 
+            ]
         ]
-    ];
+    ) {
+    }
 
     public function setLabels(
         ?string $attacker = null,
@@ -70,7 +74,7 @@ class Labels extends Data
 
                         // Save subtracted health on data array
 
-                        $this->data['Minyak']['health'] = $healthAfterDamage;
+                        $this->data->dataFight['Minyak']['health'] = $healthAfterDamage;
                     }
                     break;
                 case 'Minyak':   
@@ -95,7 +99,7 @@ class Labels extends Data
 
                         // Save subtracted health on data array
 
-                        $this->data['Orderus']['health'] = $healthAfterDamage;
+                        $this->data->dataFight['Orderus']['health'] = $healthAfterDamage;
                     }
                     break;
             }
@@ -114,27 +118,27 @@ class Labels extends Data
 
     public function countFights():void
     {
-        $this->data['countFights'] += 1;
-        $this->fights = $this->data['countFights'];
+        $this->data->dataFight['countFights'] += 1;
+        $this->fights = $this->data->dataFight['countFights'];
     }
 
     public function getWinner(): void 
     {
         // Set game over and winner label
 
-        if (($this->data['Orderus']['health'] > 0) && ($this->data['Minyak']['health'] <= 0)) {
+        if (($this->data->dataFight['Orderus']['health'] > 0) && ($this->data->dataFight['Minyak']['health'] <= 0)) {
             $this->winner = 'Orderus Wins';
-            $this->data['gameOver'] = true;
+            $this->data->dataFight['gameOver'] = true;
         }
 
-        if (($this->data['Orderus']['health'] <= 0) && ($this->data['Minyak']['health'] > 0)) {
+        if (($this->data->dataFight['Orderus']['health'] <= 0) && ($this->data->dataFight['Minyak']['health'] > 0)) {
             $this->winner = 'Minyak Wins';
-            $this->data['gameOver'] = true;
+            $this->data->dataFight['gameOver'] = true;
         }
 
-        if ($this->data['countFights'] > 20) {
-            $this->data['gameOver'] = true;
-            if ($this->data['Orderus']['health'] > $this->data['Minyak']['health']) {
+        if ($this->data->dataFight['countFights'] > 20) {
+            $this->data->dataFight['gameOver'] = true;
+            if ($this->data->dataFight['Orderus']['health'] > $this->data->dataFight['Minyak']['health']) {
                 $this->winner = 'Orderus Wins';
             } else {
                 $this->winner = 'Minyak Wins';
