@@ -75,16 +75,11 @@ class FightTest extends TestCase
 
     public function testDefenderIsSet()
     {
-        $warriors = ['Orderus', 'Minyak'];
-        $defender = $this->fight->getDefender(80, 70, $warriors[rand(0, 1)]);
+        $defender = $this->fight->getDefender(80, 70, 'Orderus');
+        $this->assertInstanceOf(DefenderMinyak::class, $defender);
 
-        $this->assertContains(
-            $defender::class, 
-            [
-                DefenderOrderus::class,
-                DefenderMinyak::class
-            ]
-        );
+        $defender = $this->fight->getDefender(80, 70, 'Minyak');
+        $this->assertInstanceOf(DefenderOrderus::class, $defender);
     }
 
     public function testMagicShieldIsSet() 
@@ -103,9 +98,10 @@ class FightTest extends TestCase
 
     public function testSwitchAttackerIsSet()
     {
-        $warriors = ['Orderus', 'Minyak'];
-        $switchAttacker = $this->fight->switchAttacker($warriors[rand(0, 1)]);
+        $switchAttacker = $this->fight->switchAttacker('Orderus');
+        $this->assertEquals('Minyak', $switchAttacker);
 
-        $this->assertContains($switchAttacker, ['Orderus', 'Minyak']);
+        $switchAttacker = $this->fight->switchAttacker('Minyak');
+        $this->assertEquals('Orderus', $switchAttacker);
     }
 }

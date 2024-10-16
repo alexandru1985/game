@@ -52,8 +52,7 @@ if (!isset($_POST['playGame'])) {
 
 if (isset($_POST['playGame'])) {
     
-    $dataFight = $data->getData();
-    $data->dataFight = $dataFight;
+    $data->dataFight = $data->getData();
 
     // Get next attacker
 
